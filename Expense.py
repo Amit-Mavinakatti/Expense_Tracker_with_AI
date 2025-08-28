@@ -1,157 +1,142 @@
 from openai import OpenAI
 
-print("\n\n\n=============================================:Expense Tracker:============================================\n")
-print("\n")
-print("Hey WelCome!")
-print("\n")
-print("Here's our simple tool Expense Tracker. \nHere you can take look on managing and working on your expenses .")
-print("Let's GO....")
-print("\n")
-print("Fill the following to proceed :")
-print("\n")
+def start_ai_chat(client, expenses_list, budget_list, income):
+    """Start infinite AI chat with financial awareness"""
+    print("\n==========================================================: AI Mode :================================================================")
+    print("🤖 AI is ready! You can ask finance-related questions, savings tips, or general advice.")
+    print("Type 'quit' to exit AI mode.\n")
+
+    # Prepare data for AI so it knows your expenses
+    expense_summary = "\n".join([f"{a}: Rs.{b}" for a, b in zip(expenses_list, budget_list)])
+    context = f"""
+    I am tracking my monthly expenses.
+    Monthly Income: Rs.{income}
+    My Expenses and Budgets:
+    {expense_summary}
+
+    Use this data whenever needed to provide personalized financial advice.
+    """
+
+    while True:
+        user_input = input("You: ")
+
+        if user_input.lower() in ['quit', 'exit', 'bye']:
+            print("\nExiting AI Mode... Thank You!")
+            break
+
+        try:
+            response = client.responses.create(
+                model="gpt-4.1-mini",
+                input=context + "\nUser Question: " + user_input
+            )
+            print("\nAI:", response.output_text, "\n")
+        except Exception as e:
+            print("⚠ AI Error:", str(e))
+
+
+print("\n\n=========================================: Smart Expense Tracker with AI :========================================\n")
+print("Hey Welcome!")
+print("Here's our smart tool Expense Tracker with AI. Manage and analyze your expenses intelligently!")
+print("Let's GO....\n")
 
 try:
+    # User info
     name = input("User Name: ")
-    print("\n")
     Email = input("Email    : ")
-    print("\n")
     password = input("Password : ")
-    print("\n")
 
     while True:
         try:
-            income = int(input("Enter Your Monthly Earnings:(in Rs.) "))
+            income = int(input("\nEnter Your Monthly Earnings (in Rs.): "))
             break
         except ValueError:
-            print("❌ Please enter a valid number for income. Try again!\n")
-    print("\n")
+            print("❌ Please enter a valid number for income. Try again!")
 
     secured = "#####" + str(password[-1]) if password else "#####"
 
-    print("====================================================:Expense Tracker:==========================================\n")
-    print("\nAccount Details :\n")
-    print("\nUSER NAME :", name.upper())
-    print("\nEmail     :", Email.upper())
-    print("\nPassword  :", secured)
-    print("\nTOTAL INCOME : ", income)
+    print("\n====================================================:Expense Tracker:==========================================\n")
+    print("Account Details:\n")
+    print("USER NAME :", name.upper())
+    print("Email     :", Email.upper())
+    print("Password  :", secured)
+    print("TOTAL INCOME : ", income)
 
     expenses_list = []
     budget_list = []
 
-    print("=========================================:Main Menu:=====================================")
-
-    print("\n1) Lets Start")
-    print("2) Exit ")
-
-    print("\n\n Our Tool also has  AI Feature , if you want to Use our AI just follow the procedures:")
-    print(" * Press 'AI' To Enetr AI Mode\n")
-    print(" *Enter 'quit' to Exit from AI Mode\n")
+    print("\n=========================================: Main Menu :=====================================")
+    print("1) Start Tracking Expenses")
+    print("2) Exit")
     option = input("\nEnter Your option: ")
 
     if option == '1':
-        print("\nOops! you don't have any Expenses yet!")
-        print("\nDo u want to add new expenses?(y/n)")
+        print("\nDo you want to add new expenses? (y/n)")
         option2 = input("Enter Here: ")
-        print("\n")
 
         if option2.lower() == 'y':
             while True:
                 try:
-                    num = int(input("How many Expenses do you want to add? : "))
+                    num = int(input("How many expenses do you want to add? : "))
                     break
                 except ValueError:
-                    print("❌ Please enter a valid number!\n")
+                    print("❌ Please enter a valid number!")
 
-            print("\nEnter " + str(num) + " New Expenses\n")
-
+            print("\nEnter " + str(num) + " Expenses\n")
             for i in range(num):
-                expenses = input("Enter: ")
-                expenses_list.append(expenses)
+                expense = input(f"Expense {i+1}: ")
+                expenses_list.append(expense)
 
-            print("\nHere are your Expenses :")
-            for i in range(len(expenses_list)):
-                print(str(i + 1) + ") " + expenses_list[i])
-
-            print("\nDo You want to add Budget for your expenses?(y/n)")
+            print("\nDo you want to add budget for your expenses? (y/n)")
             option3 = input("Enter: ")
-            print("\n")
 
             if option3.lower() == 'y':
                 for i in range(len(expenses_list)):
                     while True:
                         try:
-                            print("Add budget for " + expenses_list[i] + "( in Rs.)")
-                            budget = int(input("Your Budget:(in Rs.) "))
+                            print(f"Add budget for {expenses_list[i]} (in Rs.):")
+                            budget = int(input("Your Budget: "))
                             budget_list.append(budget)
-                            print("Budget for " + expenses_list[i] + " is = Rs. " + str(budget_list[i]))
-                            print("\n")
                             break
                         except ValueError:
-                            print("❌ Please enter a valid number for budget.\n")
+                            print("❌ Please enter a valid number for budget.")
 
-            print("Please press = for Our tracker Suggestions:")  
-            sug = input("Your entry: ")
+            print("\n=============== Expense Summary ==========================\n")
+            print("Expenses" + "   " + "Budget(in Rs.)\n")
+            for a, b in zip(expenses_list, budget_list):
+                print(f"{a} = Rs.{b}")
 
-            if sug == '=':
-                print("Getting Summary from  Tracker ......................\n")
-                print("\n=============== Here is Summary of Your Expenses ==========================: \n")
+            print("\nYour Total Expenses: ", len(expenses_list))
+            print("Your Total Income : Rs.", income)
+            print("Your Total Budget : Rs.", sum(budget_list))
 
-                print("Expenses" + "   " + "Budget(in Rs.)\n")
+            if budget_list:
+                print("Highest Budget : Rs.", max(budget_list))
+                print("Lowest Budget  : Rs.", min(budget_list))
 
-                for a, b in zip(expenses_list, budget_list):
-                    print(f"{a} = {b}")
+            if income > sum(budget_list):
+                print("\n✅ Your expenses are under control. Keep it up!")
+            else:
+                print("\n⚠ Warning: Your expenses exceed your income! Try to reduce spending.")
 
-                print("\n1) Your Total expenses are     : ", len(expenses_list))
-                print("2) Your Total income is Rs.      : ", income)
-                print("3) Your Total budget is Rs       : ", sum(budget_list))
-                if budget_list:  # Prevent error if no budget entered
-                    print("4) Highest Budget is   Rs.       : ", max(budget_list))
-                    print("5) Lowest Budget is    Rs.       : ", min(budget_list))
-                print("\n")
-
-                if income > sum(budget_list):
-                    print("Don't Worry ! Your Expenses are in good range:")
-                    print("Keep it up.")
-                else:
-                    print("Alert !! Your Expenses utility is GREATER than your monthly earnings :")
-                    print("Pro tip: Try to minimize the expenses")
-
-                print("\nThank You\nVisit Again")
-
-    elif option == 'AI':
-        print("\n==========================================================: AI Mode :================================================================")
-        print("*Enter 'quit' to exit from the AI Mode")
-        try:
-            client = OpenAI(api_key="")  # ⚠ Replace with your actual key
-            while True:
-                user_input = input("You : ")
-                if (user_input.lower() in ['quit', "bye", "exit"]):
-                    print("Exiting.....")
-                    print("Thank YOU!")
-                    break
+            # ===== AI INTEGRATION =====
+            use_ai = input("\nDo you want AI to analyze and assist you? (y/n): ")
+            if use_ai.lower() == 'y':
                 try:
-                    response = client.responses.create(
-                        model='gpt-4.1-mini',
-                        input=user_input
-                    )
-                    print("AI: ", response.output_text, "\n")
+                    client = OpenAI(api_key="")  # Replace with your key
+                    start_ai_chat(client, expenses_list, budget_list, income)
                 except Exception as e:
-                    print("⚠️ AI Error:", str(e))
-        except Exception as e:
-            print("⚠️ Could not start AI Mode:", str(e))
+                    print("⚠ Could not start AI Analysis:", str(e))
+        else:
+            print("\nNo expenses added. Exiting...")
 
     elif option == '2':
-        print("\nExiting..............")
-        print("Thank You!\nVisit Again")
+        print("\nExiting... Thank You! Visit Again")
 
     else:
-        print("\nInvalid Option!!")
+        print("\nInvalid Option!")
 
 except Exception as e:
-    print("\n⚠️ An unexpected error occurred:", str(e))
+    print("\n⚠ Unexpected Error:", str(e))
 
-print("\nMade with Love")
-print("CopyRight 2025 ")
-print("All Rights Reserved")
-print("Creator : Amit")
-print("Contact : 9353912665")
+print("\nMade with ❤️ by Amit M")
+print("© 2025 All Rights Reserved")
