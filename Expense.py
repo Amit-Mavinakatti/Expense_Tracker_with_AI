@@ -1,4 +1,4 @@
-
+from openai import OpenAI
 
 def start_ai_chat(client, expenses_list, budget_list, income):
     """Start infinite AI chat with financial awareness"""
@@ -141,6 +141,7 @@ except Exception as e:
 print("\nMade with ❤️ by Amit M")
 print("© 2025 All Rights Reserved")
 print("Thank You!")
+
 
 
 
