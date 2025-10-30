@@ -6,7 +6,7 @@ def start_ai_chat(client, expenses_list, budget_list, income):
     print("🤖 AI is ready! You can ask finance-related questions, savings tips, or general advice.")
     print("Type 'quit' to exit AI mode.\n")
 
-    # Prepare data for AI so it knows your expenses
+    
     expense_summary = "\n".join([f"{a}: Rs.{b}" for a, b in zip(expenses_list, budget_list)])
     context = f"""
     I am tracking my monthly expenses.
@@ -141,6 +141,7 @@ except Exception as e:
 print("\nMade with ❤️ by Amit M")
 print("© 2025 All Rights Reserved")
 print("Thank You!")
+
 
 
 
